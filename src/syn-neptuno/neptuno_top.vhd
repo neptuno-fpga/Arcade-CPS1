@@ -39,7 +39,7 @@
 -- you have the latest version of this file.
 --
 -------------------------------------------------------------------------------
--- unamiga 06/11/2019 delgrom
+-- Neptuno Top adapted 07/09/2020 delgrom
 -------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -47,7 +47,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
 use work.msx_pack.all;
 
-entity multicore2_top is
+entity neptuno_top is
 	port (
 		-- Clocks
 		clock_50_i			: in    std_logic;
@@ -86,20 +86,23 @@ entity multicore2_top is
 		sd_miso_i			: in    std_logic;
 
 		-- Joysticks
-		joy1_up_i			: in    std_logic;
-		joy1_down_i			: in    std_logic;
-		joy1_left_i			: in    std_logic;
-		joy1_right_i		: in    std_logic;
-		joy1_p6_i			: in    std_logic;
-		joy1_p9_i			: in    std_logic;
-		joy2_up_i			: in    std_logic;
-		joy2_down_i			: in    std_logic;
-		joy2_left_i			: in    std_logic;
-		joy2_right_i		: in    std_logic;
-		joy2_p6_i			: in    std_logic;
-		joy2_p9_i			: in    std_logic;
+--		joy1_up_i			: in    std_logic;
+--		joy1_down_i			: in    std_logic;
+--		joy1_left_i			: in    std_logic;
+--		joy1_right_i		: in    std_logic;
+--		joy1_p6_i			: in    std_logic;
+--		joy1_p9_i			: in    std_logic;
+--		joy2_up_i			: in    std_logic;
+--		joy2_down_i			: in    std_logic;
+--		joy2_left_i			: in    std_logic;
+--		joy2_right_i		: in    std_logic;
+--		joy2_p6_i			: in    std_logic;
+--		joy2_p9_i			: in    std_logic;
+		JOY_CLK				: out   std_logic;
+		JOY_LOAD 			: out   std_logic;
+		JOY_DATA 			: in    std_logic;
 		joyX_p7_o			: out   std_logic								:= '1';
-
+				
 		-- Audio
 		dac_l_o				: out   std_logic								:= '0';
 		dac_r_o				: out   std_logic								:= '0';
@@ -107,52 +110,18 @@ entity multicore2_top is
 		mic_o					: out   std_logic								:= '0';
 
 		-- VGA
-		vga_r_o				: out   std_logic_vector(4 downto 0)	:= (others => '0');
-		vga_g_o				: out   std_logic_vector(4 downto 0)	:= (others => '0');
-		vga_b_o				: out   std_logic_vector(4 downto 0)	:= (others => '0');
+		vga_r_o				: out   std_logic_vector(5 downto 0)	:= (others => '0');
+		vga_g_o				: out   std_logic_vector(5 downto 0)	:= (others => '0');
+		vga_b_o				: out   std_logic_vector(5 downto 0)	:= (others => '0');
 		vga_hsync_n_o		: out   std_logic								:= '1';
 		vga_vsync_n_o		: out   std_logic								:= '1';
-
-		-- I2S audio
-		i2s_mclk				: out   std_logic								:= '0';
-		i2s_bclk				: out   std_logic								:= '0';
-		i2s_lrclk			: out   std_logic								:= '0';
-		i2s_data				: out   std_logic								:= '0'
+		
+		--STM32
+		stm_rst_o			: out std_logic		:= '0' -- '0' to hold the microcontroller reset line, to free the SD card	
 	);
 end entity;
 
-architecture behavior of multicore2_top is
-
-	component audio_out
-	generic(
-         CLK_RATE : integer
-	);
-   port
-   (
-		reset					: in    std_logic;  -- init signal after FPGA config to initialize RAM
-		clk 					: in    std_logic;  -- 50 mhz
-		
-		sample_rate 		: in    std_logic;  -- 0 - 48KHz, 1 - 96KHz 
-		
-		left_in				: in    std_logic_vector(15 downto 0)  := (others => '0');
-		right_in				: in    std_logic_vector(15 downto 0)  := (others => '0');
-
-	   -- I2S
-		--i2s_mclk				: out   std_logic;
-		i2s_bclk				: out   std_logic;
-		i2s_lrclk			: out   std_logic;
-		i2s_data 			: out   std_logic
-
-		-- SPDIF
-		--spdif					: out   std_logic;
-
-	   -- Sigma-Delta DAC
-		--dac_l					: out   std_logic;
-		--dac_r 				: out   std_logic
-		
-	); 
-	end component;
-
+architecture behavior of neptuno_top is
 
 	-- Buttons
 	signal btn_por_n_s		: std_logic;
@@ -218,7 +187,7 @@ architecture behavior of multicore2_top is
 	signal scanlines_en_s	: std_logic;
 	signal odd_line_s			: std_logic;
 
-	-- señales video delgrom
+	-- señales video 
 	signal rgb_r_s				: std_logic_vector( 3 downto 0);
 	signal rgb_g_s				: std_logic_vector( 3 downto 0);
 	signal rgb_b_s				: std_logic_vector( 3 downto 0);
@@ -268,6 +237,41 @@ architecture behavior of multicore2_top is
 	signal opll_mo_s			: signed(12 downto 0)			:= (others => '0');
 	signal opll_ro_s			: signed(12 downto 0)			:= (others => '0');
 	
+	-- JOYSTICKS
+	signal joy1up			: std_logic								:= '1';
+	signal joy1down		: std_logic								:= '1';
+	signal joy1left		: std_logic								:= '1';
+	signal joy1right		: std_logic								:= '1';
+	signal joy1fire1		: std_logic								:= '1';
+	signal joy1fire2		: std_logic								:= '1';
+	signal joy2up			: std_logic								:= '1';
+	signal joy2down		: std_logic								:= '1';
+	signal joy2left		: std_logic								:= '1';
+	signal joy2right		: std_logic								:= '1';
+	signal joy2fire1		: std_logic								:= '1';
+	signal joy2fire2		: std_logic								:= '1';
+	
+	component joydecoder is
+	Port ( 	
+ 				clk 			: in std_logic; 
+				joy_data    : in std_logic;
+				joy_clk		: out std_logic;
+				joy_load_n	: out std_logic;
+				joy1up		: out std_logic;
+				joy1down		: out std_logic;
+				joy1left		: out std_logic;
+				joy1right	: out std_logic;
+				joy1fire1	: out std_logic;
+				joy1fire2	: out std_logic;
+				joy2up		: out std_logic;
+				joy2down		: out std_logic;
+				joy2left		: out std_logic;
+				joy2right	: out std_logic;
+				joy2fire1	: out std_logic;
+				joy2fire2	: out std_logic
+ 	);
+   end component;	
+	
 
 begin
 
@@ -306,10 +310,10 @@ begin
 	the_msx: entity work.msx
 	generic map (
 		hw_id_g			=> 8,
-		hw_txt_g			=> "unamiga Board",
+		hw_txt_g			=> "neptUNO Board",
 		hw_version_g	=> actual_version,
 --		video_opt_g		=> 3,							-- No dblscan and external palette (Color in rgb_r_o)
-		video_opt_g		=> 1,						-- 1 = dblscan configurable    delgrom
+		video_opt_g		=> 1,						-- 1 = dblscan configurable    
 		ramsize_g		=> 8192,
 		hw_hashwds_g	=> '0'
 	)
@@ -330,7 +334,7 @@ begin
 		opt_nextor_i	=> '1',
 		opt_mr_type_i	=> "00",
 --		opt_vga_on_i	=> '1',
-		opt_vga_on_i	=> '0',  --delgrom
+		opt_vga_on_i	=> '0',  --
 		-- RAM
 		ram_addr_o		=> ram_addr_s,
 		ram_data_i		=> ram_data_from_s,
@@ -383,25 +387,48 @@ begin
 		k7_audio_o		=> mic_o,
 		k7_audio_i		=> ear_i,
 		-- Joystick
-		joy1_up_i		=> joy1_up_i,
-		joy1_down_i		=> joy1_down_i,
-		joy1_left_i		=> joy1_left_i,
-		joy1_right_i	=> joy1_right_i,
-		joy1_btn1_i		=> joy1_p6_i,
+--		joy1_up_i		=> joy1_up_i,
+--		joy1_down_i		=> joy1_down_i,
+--		joy1_left_i		=> joy1_left_i,
+--		joy1_right_i	=> joy1_right_i,
+--		joy1_btn1_i		=> joy1_p6_i,
+--		joy1_btn1_o		=> open,
+--		joy1_btn2_i		=> joy1_p9_i,
+--		joy1_btn2_o		=> open,
+--		joy1_out_o		=> joy1_out_s,
+--		joy2_up_i		=> joy2_up_i,
+--		joy2_down_i		=> joy2_down_i,
+--		joy2_left_i		=> joy2_left_i,
+--		joy2_right_i	=> joy2_right_i,
+--		joy2_btn1_i		=> joy2_p6_i,
+--		joy2_btn1_o		=> open,
+--		joy2_btn2_i		=> joy2_p9_i,
+--		joy2_btn2_o		=> open,
+--		joy2_out_o		=> joy2_out_s,
+
+		-- Joystick
+		joy1_up_i		=> joy1up,
+		joy1_down_i		=> joy1down,
+		joy1_left_i		=> joy1left,
+		joy1_right_i	=> joy1right,
+		joy1_btn1_i		=> joy1fire1,
 		joy1_btn1_o		=> open,
-		joy1_btn2_i		=> joy1_p9_i,
+		joy1_btn2_i		=> joy1fire2,
 		joy1_btn2_o		=> open,
-		joy1_out_o		=> joy1_out_s,
-		joy2_up_i		=> joy2_up_i,
-		joy2_down_i		=> joy2_down_i,
-		joy2_left_i		=> joy2_left_i,
-		joy2_right_i	=> joy2_right_i,
-		joy2_btn1_i		=> joy2_p6_i,
+		joy1_out_o		=> open,
+		joy2_up_i		=> joy2up,
+		joy2_down_i		=> joy2down,
+		joy2_left_i		=> joy2left,
+		joy2_right_i	=> joy2right,
+		joy2_btn1_i		=> joy2fire1,
 		joy2_btn1_o		=> open,
-		joy2_btn2_i		=> joy2_p9_i,
+		joy2_btn2_i		=> joy2fire2,
 		joy2_btn2_o		=> open,
-		joy2_out_o		=> joy2_out_s,
-		-- video delgrom 
+		joy2_out_o		=> open,		
+		
+
+		
+		-- video  
 		cnt_hor_o		=> open,
 		cnt_ver_o		=> open,
 		rgb_r_o			=> rgb_r_s,
@@ -428,7 +455,7 @@ begin
 		D_ipl_en_o		=> open
 	);
 
-	joyX_p7_o <= not joy1_out_s;		-- for Sega Genesis joypad
+--	joyX_p7_o <= not joy1_out_s;		-- for Sega Genesis joypad
 	--joy2_p7_o <= not joy2_out_s;		-- for Sega Genesis joypad
 
 	-- RAM
@@ -486,7 +513,7 @@ begin
 		keymap_data_i	=> keymap_data_s,
 		keymap_we_i		=> keymap_we_s,
 		-- LEDs
-		led_caps_i		=> caps_en_s, -- delgrom en zxuno vale '0'
+		led_caps_i		=> caps_en_s, 
 		-- PS/2 interface
 		ps2_clk_io		=> ps2_clk_io,
 		ps2_data_io		=> ps2_data_io,
@@ -496,10 +523,31 @@ begin
 		--
 		reset_o			=> soft_reset_k_s,
 		por_o				=> soft_por_s,
-		reload_core_o	=> open, --delgrom en zxuno vale  reload_core_s,
+		reload_core_o	=> open, 
 		extra_keys_o	=> extra_keys_s
 	);
 
+	-- JOYSTICKS
+	joy: joydecoder
+	  port map (
+		clk				=> clock_master_s,
+		joy_clk			=> JOY_CLK,
+		joy_load_n 		=> JOY_LOAD,
+		joy_data			=> JOY_DATA,		
+		joy1up  			=> joy1up,
+		joy1down			=> joy1down,
+		joy1left			=> joy1left,
+		joy1right		=> joy1right,
+		joy1fire1		=> joy1fire1,
+		joy1fire2		=> joy1fire2,
+		joy2up  			=> joy2up,
+		joy2down			=> joy2down,
+		joy2left			=> joy2left,
+		joy2right		=> joy2right,
+		joy2fire1		=> joy2fire1,
+		joy2fire2		=> joy2fire2
+	);	
+	
 	-- Audio
 	mixer: entity work.mixeru
 	port map (
@@ -545,58 +593,6 @@ begin
 		dac_o		=> dac_r_o
 	);
 
-	
-	-- I2S audio (Delgrom)
-	
-i2s_audio_out : audio_out
-    generic map
-	 (
-		CLK_RATE 			=> 500000
-	 )
-	 port map
-   (
-		reset					=> reset_s,
-		clk 					=> clock_50_i,
-		sample_rate			=> '0',  -- 0 - 48KHz, 1 - 96KHz 
-		left_in				=> std_logic_vector(audio_l_amp_s),
-		right_in				=> std_logic_vector(audio_r_amp_s),
-		
-		--i2s_mclk				=>	open, -- i2s_mclk_o, 
-		i2s_bclk				=> i2s_bclk,
-		i2s_lrclk			=> i2s_lrclk,
-		i2s_data				=> i2s_data
-   );
-	
-	
---	i2saudio : entity work.i2s_transmitter
---	generic map (
---		mclk_rate	=>	24576000, --24576000, --24576000, 
---		sample_rate	=>	48000,
---		preamble	   =>	0,				-- 0=Left-justified, 1=I2S
---		word_length => 16		
---	)
---	port map (
---		clock_i	=> clock_master_s, --clock_master_s, --clock_50_i, 
---		reset_i	=> reset_s,
---		-- Parallel input
---		pcm_l_i	=> std_logic_vector(audio_l_amp_s),
---		pcm_r_i	=> std_logic_vector(audio_r_amp_s),
---
---		i2s_mclk_o	=> i2s_mclk,
---		i2s_lrclk_o	=> i2s_lrclk, 
---		i2s_bclk_o	=> i2s_bclk,
---		i2s_d_o		=> i2s_data
---	);	
-	
-
-
-
-	
-	
-	
-	
-	
-	
 	-- Glue logic
 
 	-- Resets
@@ -619,10 +615,10 @@ i2s_audio_out : audio_out
 		end if;
 	end process;
 
-	-- RGB/VGA Output delgrom
-	vga_r_o			<= rgb_r_s(3 downto 1) & '0' & '0';
-	vga_g_o			<= rgb_g_s(3 downto 1) & '0' & '0';
-	vga_b_o			<= rgb_b_s(3 downto 1) & '0' & '0';
+	-- RGB/VGA Output 
+	vga_r_o			<= rgb_r_s & '0' & '0';
+	vga_g_o			<= rgb_g_s & '0' & '0';
+	vga_b_o			<= rgb_b_s & '0' & '0';
 	vga_hsync_n_o	<= rgb_hsync_n_s			when vga_en_s = '1'	else (rgb_hsync_n_s and rgb_vsync_n_s);
 	vga_vsync_n_o	<= rgb_vsync_n_s			when vga_en_s = '1'	else '1';
 	--	vga_ntsc_o		<= not ntsc_pal_s;

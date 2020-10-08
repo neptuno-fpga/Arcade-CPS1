@@ -28,5 +28,4 @@ DATE = "10:24:04  February 06, 2018"
 
 # Revisions
 
-PROJECT_REVISION = "msx_multicore2"
-PROJECT_REVISION = "msx_multicore"
+PROJECT_REVISION = "msx"
