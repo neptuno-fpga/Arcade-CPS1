@@ -1,0 +1,47 @@
+Warning (10268): Verilog HDL information at audio_out.v(41): always construct contains both blocking and non-blocking assignments
+Info (10281): Verilog HDL Declaration information at jtcps1_sound.v(52): object "FMGAIN" differs only in case from object "fmgain" in the same scope
+Info (10281): Verilog HDL Declaration information at jtcps1_sound.v(52): object "PCMGAIN" differs only in case from object "pcmgain" in the same scope
+Info (10281): Verilog HDL Declaration information at jtframe_credits.v(38): object "HB" differs only in case from object "hb" in the same scope
+Info (10281): Verilog HDL Declaration information at jtframe_credits.v(39): object "VB" differs only in case from object "vb" in the same scope
+Warning (10273): Verilog HDL warning at jt51_mod.v(53): extended using "x" or "z"
+Warning (10273): Verilog HDL warning at jt51_op.v(133): extended using "x" or "z"
+Warning (10273): Verilog HDL warning at jt51_op.v(202): extended using "x" or "z"
+Info (10281): Verilog HDL Declaration information at jt9346.v(36): object "write_all" differs only in case from object "WRITE_ALL" in the same scope
+Warning (10268): Verilog HDL information at jtframe_mc2_base.v(444): always construct contains both blocking and non-blocking assignments
+Info (10281): Verilog HDL Declaration information at jtframe_board.v(62): object "SDRAM_A" differs only in case from object "sdram_a" in the same scope
+Info (10281): Verilog HDL Declaration information at jtframe_board.v(63): object "SDRAM_DQML" differs only in case from object "sdram_dqml" in the same scope
+Info (10281): Verilog HDL Declaration information at jtframe_board.v(64): object "SDRAM_DQMH" differs only in case from object "sdram_dqmh" in the same scope
+Info (10281): Verilog HDL Declaration information at scandoubler.v(34): object "hq2x" differs only in case from object "Hq2x" in the same scope
+Warning (10720): Verilog HDL or VHDL warning at ../modules/jtframe/hdl/mister/sys/video_mixer.sv(22): MESSAGE_ON or MESSAGE_OFF directive cannot process the non-HDL message ID 12161.
+Info (10281): Verilog HDL Declaration information at video_mixer.sv(50): object "R" differs only in case from object "r" in the same scope
+Info (10281): Verilog HDL Declaration information at video_mixer.sv(51): object "G" differs only in case from object "g" in the same scope
+Info (10281): Verilog HDL Declaration information at video_mixer.sv(52): object "B" differs only in case from object "b" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(322): object "A" differs only in case from object "a" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(323): object "B" differs only in case from object "b" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(324): object "D" differs only in case from object "d" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(321): object "E" differs only in case from object "e" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(326): object "H" differs only in case from object "h" in the same scope
+Info (10281): Verilog HDL Declaration information at hq2x.sv(325): object "F" differs only in case from object "f" in the same scope
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[21]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[20]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[19]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[18]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[17]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[16]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[15]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[14]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[13]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[12]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[11]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[10]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[9]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[8]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[7]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[6]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[5]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[4]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[3]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[2]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[1]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|gamma_bus[0]" is stuck at GND because node is in wire loop and does not have a source
+Warning (12161): Node "jtframe_mc2:u_frame|jtframe_board:u_board|jtframe_dip:u_dip|dip_test" is stuck at GND because node is in wire loop and does not have a source

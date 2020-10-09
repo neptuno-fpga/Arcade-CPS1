@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Fri Oct 09 19:28:20 2020
+Quartus II 64-Bit Version : 13.1.0 Build 162 10/23/2013 SJ Web Edition
+Revision Name : jtcps1
+Top-level Entity Name : multicore2_top
+Family : Cyclone IV E
+Total logic elements : 25,679
+    Total combinational functions : 20,114
+    Dedicated logic registers : 10,399
+Total registers : 10399
+Total pins : 85
+Total virtual pins : 0
+Total memory bits : 261,661
+Embedded Multiplier 9-bit elements : 4
+Total PLLs : 1

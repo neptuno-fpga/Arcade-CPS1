@@ -1,115 +1,143 @@
-# MSX1FPGA
-MSX1 cloned in FPGA
+# jtcps1
 
-This project is an MSX1 cloned in FPGA, with some parts of the OCM project.
+Capcom System 1 compatible verilog core for FPGA by Jose Tejada (jotego).
 
-Specifications:
+Ported to Multicore 2 by Victor Trucco 2020
 
-- Multiple boards;
-- MSX1 50Hz or 60Hz;
-- RAM Mapper size configurable, depends on the board;
-- 128K Nextor (MSX-DOS2 evolution) ROM with SD driver;
-- Megaram SCC/SCC+ from OCM project (size configurable, depends on the board);
-- Keyboard map reconfigurable;
-- Simple switched I/O ports (no software yet);
-- 15/31KHz configurable.
-- Scanlines configurable.
-- HDMI output on some boards.
+# Controls on the Multicore 2
 
-In the project there is a loader (IPL) to boot and load ROMs and configuration from SD card.
+- F12 OSD Menu
+- Arrows = movement Player one
+- A,S,D or Ctrl, Alt and Space - Butons 1,2 and 3 player one
+- Z,X,C buttons 4,5,6 Player 1
 
-The "CONFIG.TXT" configuration file is self-explanatory.
+- I,J,K,L - Movemente player two
+- Q, W - Buttons 1 and 2 player two.
 
-## Use instructions
+- Button 1 and 2 or keys 1 and 2 to Start 1P or 2P
+- Button 3 or key 5 to insert a coin (some games need more than one coin to start the game)
+- Button 4 or key F3 as reset
 
-Format an SD Card in FAT16 (max 4GB), unzip the file 'msx1_sd_files.zip' in the root directory from SD Card.
+You can use one or two Sega 6 buttons joysticks at the controller ports.
 
-Some keys and their functions:
+Original README file
+---------------------------------------------------------------------------------
 
- - Print Screen: Toggle VGA mode;
- - Scroll Lock: Toggle Scanlines mode;
- - Pause/Break: Toggle 50/60 Hz Vertical frequency
- - F11: Toggle Turbo mode;
- - CTRL+ALT+DEL: Soft Reset;
- - CTRL+ALT+F12: Hard Reset;
- - CTRL+ALT+BACKSPACE: For ZX-Uno based boards only: reload FPGA;
- - Left ALT: MSX GRAPH key;
- - Right ALT: MSX CODE key;
- - Page Up: MSX SELECT key;
- - END: MSX STOP key.
- 
-The joystick port is mapped as JoyMega, and configured to use a SEGA Genesis/Megadrive joypad.
+# Control
 
-To go to the BASIC from the MSX-DOS you must execute the BASIC command.
+MiSTer allows for gamepad redifinition. However, the keyboard can be used with more or less the same layout as MAME for MiST(er) platforms. Some important keys:
 
-To go to MSX-DOS from BASIC, CALL SYSTEM must be executed.
+-F12 OSD menu
+-P   Pause. Press 1P during pause to toggle the credits on and off
+-5,6 1P coin, 2P coin
+-1,2 1P, 2P
 
+# MiSTer
 
-NOTES:
+Copy the RBF file to `_Arcade/cores` and the MRA files to `_Arcade`. Copy zipped MAME romsets to `_Arcade/mame`. Enjoy.
 
-- In BASIC use the "CTRL + STOP" keys to stop the execution of a program. The MSX STOP key is mapped to the END key of the PC.
-- To change the video mode by switching between 50HZ and 60HZ, and thus play at correct speed to PAL games, such as "Invasion of the Zombie Monsters", through the VGA output, you can use the program "DISPLAY.COM", which is to download in this thread (https://www.msx.org/forum/msx-talk/software/dos-tool-to-switch-from-50-to-60hz).
+It is also possible to keep the MAME romsets in `_Arcade/mame` but have the MRA files in `_CPS` and the RBF files in `_CPS/cores`
 
+## Notes
 
-## SOFTWARE LOADING:
+The _rotate screen_ OSD option is ignored for horizontal games.
 
-### A.- .ROM files
+# MiST
 
-They are dumps of programs in cartridges.
+## Setup
 
-Uses the SROM.COM utility to load the ROMs file. Ex: SROM NEMESIS1.ROM
+You need to generate the .rom file using this (tool)[https://github.com/sebdel/mra-tools-c/tree/master/release]. Basically call it like this:
 
-### B.- .DSK files
+`mra ghouls.mra -z rompath -A`
 
-They are dumps of programs in disketes.
+And that will produce the .rom file and a .arc file. The .arc file can be used to start the core and directly load the game rom file. Note that the RBF name must be JTCPS1.RBF for it to work. The three files must be in the root folder.
 
-Uses the SRI.COM utility to emulate a disk. Ex: SRI GAME.DSK
+*Important*: make sure to have the latest firmware and latest version of the mra tool.
 
-### C.- .CAS files
+Copy the RBF, .arc and .rom files to MiST and enjoy!
 
-They are images with the content of the audio tapes. The way to use them is very well explained in the article Load CAS files with MegaFlashROM and an MSX-2 (hhttps://programbytes48k.wordpress.com/2015/11/19/cargar-archivos-cas-con-megaflashrom-y-un-msx-2/).
+## Notes
 
-The **LOADCAX** and **LOADCAXX** files are located in the BIN folder on the diskette http://www.msxcartridgeshop.com/bin/ROMDISK.DSK of the MegaFlashROM SCC+ SD.
+Note that there is no screen rotation in MiST. Vertical games require you to turn your screen around. You can however flip the image through the OSD.
 
-### D.- .BAS files
+# Issues
 
-They are programs in BASIC that we can record in the SD, and also load them to execute them. From inside the BASIC we can type:
+Known issues:
+
+-Fuel hoses in Carrier Airwing appear on top of the airplane
+-12MHz games may run slightly slower than the original
+
+Please report issues (here)[https://github.com/jotego/jtbin/issues].
+
+# PAL Dumps
+PAL dumps cam be obtained from MAME rom sets directly. Use the tool jedutil in order to extract the equations from them. The device is usually a gal16v8. For instance:
 
 ```
-SAVE "A:HOLA.BAS"
+jedutil -view wl24b.1a gal16v8
 ```
 
-to save the program, and with
+In order to see the equations for Willow's PAL.
+
+# Compilation
+The core is compiled using jtcore from **JTFRAME**. Follow the instructions in the README file of (JTFRAME)[https://github.com/jotego/jtframe] and then:
 
 ```
-LOAD "A:HOLA.BAS"
+source setprj.sh
+jtcore -mister
 ```
 
-we recover it.
+This will produce the mister file.
 
-To know the differences between CSAVE, BSAVE and SAVE, or other commands to store and retrieve the information, you can consult this section (https://www.msx.org/wiki/Category:Disk_BASIC) with the Disk BASIC commands of the wiki from msx.org (https://www.msx.org/wiki/).
+## Static Time Analysis (STA)
 
-To load a .BAS file from Nextor-DOS, simply write its name with or without extension and press ENTER.
+MiST and SiDi compilations produce STA clean files with the default seed. However the MiSTer RBF file with everything enabled doesn't always come STA clean. If you disable HDMI or sound during compilation the RBF file will normally be STA clean. Public binary distribution in [jtbin](https://github.com/jotego/jtbin) are either STA clean or violations are below 99ps.
 
+# Simulation
 
-### E.- AUDIO IN
+## Game
+1. Generate a rom file using the MRA tool
+2. Update the symbolic link rom.bin in ver/game to point to it
+3. If all goes well, `go.sh` should update the sdram.hex file
+   But if sdram.hex is a symbolic link to something else it might
+   fail. You can delete sdram.hex first so it gets recreated
 
-The core allows the loading of programs by audio. The way to do it is from BASIC with the commands:
+   `go.sh` will fill up sdram.hex with zeros in order to avoid x's in
+   simulation.
+
+4. Apply patches if appropiate. The script `apply_patches.sh` can generate
+   some alternative hex files which skip some of the test code of the game
+   so it boots up more quickly
+
+5. While simulation is running, it is possible to update the output video
+   files by running `raw2jpg.sh`
+
+Some Verilog macros:
+
+1. FORCE_GRAY ignore palette and use a 4-bit gray scale for everything
+2. REPORT_DELAY will print the average CPU delay at the end of each frame
+   in system ticks (number of 48MHz clocks)
+
+## Video
+
+Video only simulations can be done using mame dumps. Use the tool *cfg2mame* in the *ver/video* folder
+to create two *.mame* files that can invoked from mame to dump the simulation data. Run the game in debug
+mode but source from MAME the register file that *cfg2mame* creates. Then at the point of interest souce *vram.mame*. That creates the file vram.bin. Copy that file to a directory with the mame name of the game. Add a numerical index (see the other folders for examples). Create a hex file following the examples in
+the other files too. Now you run go.sh like this:
 
 ```
-RUN”CAS:”
-```
-or well:
-```
-BLOAD”CAS:”,R
-```
-or well:
-```
-LOAD”CAS:”,R
+go.sh -g game -s number -frame 2
 ```
 
-Do not forget to disable TURBO to load a real K7 audio.
+This will run the simulation for the folder *game* and looking for files with the *number* index. If you
+ need to look at the sprites too, you need to run more than one frame as the object DMA needs a frame to
+ fill in the data.
 
-It is perfectly explained in the article How to load programs in MSX (https://programbytes48k.wordpress.com/2012/01/04/como-cargar-programas-en-msx/).
+# Support
 
-In the (http://www.vintagenarios.com/hilo-oficial-wavs-msx-t1997.html) forum of **Vintagenarios** you can find many MSX programs in WAV format that can be loaded by audio.
+You can show your appreciation through
+* Patreon: https://patreon.com/topapate
+* Paypal: https://paypal.me/topapate
+
+# Licensing
+
+Contact the author for special licensing needs. Otherwise follow the GPLv3 license attached.
